@@ -1,0 +1,2768 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="theme-color" content="#d32f2f">
+    
+    <title>SalonPro - Salon Management</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, -apple-system, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        body {
+            background: #f5f7fa;
+            color: #333;
+            min-height: 100vh;
+            overflow-x: hidden;
+            padding-top: 70px;
+            padding-bottom: 80px;
+        }
+        
+        .navbar {
+            background: white;
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            height: 70px;
+            border-bottom: 2px solid #d32f2f;
+        }
+        
+        .nav-container {
+            max-width: 100%;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 15px;
+            height: 100%;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #d32f2f;
+            font-size: 1.4rem;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        .logo i {
+            font-size: 1.6rem;
+        }
+        
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: #d32f2f;
+            cursor: pointer;
+            padding: 10px;
+        }
+        
+        /* Mobile Navigation Drawer */
+        .mobile-nav {
+            position: fixed;
+            top: 70px;
+            left: 0;
+            right: 0;
+            background: white;
+            z-index: 999;
+            transform: translateY(-100%);
+            transition: transform 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            border-top: 1px solid #eee;
+            display: none;
+        }
+        
+        .mobile-nav.active {
+            transform: translateY(0);
+        }
+        
+        .mobile-nav-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 18px 20px;
+            text-decoration: none;
+            color: #555;
+            font-weight: 600;
+            border-bottom: 1px solid #f5f5f5;
+            transition: all 0.2s;
+        }
+        
+        .mobile-nav-item i {
+            width: 24px;
+            text-align: center;
+            font-size: 1.1rem;
+            color: #d32f2f;
+        }
+        
+        .mobile-nav-item.active {
+            background: #ffebee;
+            color: #d32f2f;
+            border-left: 4px solid #d32f2f;
+        }
+        
+        /* Bottom Navigation for Android */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            display: flex;
+            justify-content: space-around;
+            padding: 12px 0 8px;
+            border-top: 2px solid #e0e0e0;
+            z-index: 1000;
+            box-shadow: 0 -3px 15px rgba(0,0,0,0.1);
+        }
+        
+        .bottom-nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 6px 10px;
+            text-decoration: none;
+            color: #666;
+            font-size: 0.75rem;
+            border-radius: 10px;
+            transition: all 0.2s;
+            min-width: 64px;
+            text-align: center;
+        }
+        
+        .bottom-nav-item i {
+            font-size: 1.4rem;
+            margin-bottom: 4px;
+        }
+        
+        .bottom-nav-item.active {
+            color: #d32f2f;
+            background: rgba(211, 47, 47, 0.1);
+            transform: translateY(-3px);
+        }
+        
+        .container {
+            max-width: 100%;
+            margin: 0 auto;
+            padding: 20px 15px;
+        }
+        
+        .page-section {
+            display: none;
+            animation: fadeIn 0.3s ease-out;
+        }
+        
+        .page-section.active {
+            display: block;
+        }
+        
+        .hero {
+            text-align: center;
+            padding: 25px 20px;
+            background: linear-gradient(135deg, #d32f2f, #f44336);
+            border-radius: 18px;
+            margin-bottom: 25px;
+            box-shadow: 0 5px 20px rgba(211, 47, 47, 0.2);
+            color: white;
+        }
+        
+        .hero h1 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+        
+        .hero p {
+            font-size: 1rem;
+            margin-bottom: 20px;
+            opacity: 0.9;
+            line-height: 1.5;
+        }
+        
+        .date-display {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 15px;
+            border-radius: 12px;
+            margin: 20px 0;
+            text-align: center;
+            font-size: 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .hero-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .hero-stat {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 18px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            text-align: center;
+            backdrop-filter: blur(10px);
+        }
+        
+        .hero-stat i {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            opacity: 0.9;
+        }
+        
+        .hero-stat h3 {
+            font-size: 0.85rem;
+            margin-bottom: 8px;
+            opacity: 0.9;
+        }
+        
+        .hero-stat-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+        }
+        
+        .card {
+            background-color: white;
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e0e0e0;
+        }
+        
+        .card-title {
+            color: #333;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid #ffebee;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.3rem;
+        }
+        
+        .card-title i {
+            color: #d32f2f;
+        }
+        
+        .services-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 18px;
+            margin-top: 20px;
+        }
+        
+        .service-card {
+            background: white;
+            border-radius: 14px;
+            padding: 20px;
+            border: 2px solid #f0f0f0;
+            transition: all 0.3s ease;
+        }
+        
+        .service-card:hover {
+            border-color: #d32f2f;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(211, 47, 47, 0.1);
+        }
+        
+        .service-card-header {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            margin-bottom: 18px;
+        }
+        
+        .service-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #d32f2f, #f44336);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.3rem;
+            flex-shrink: 0;
+        }
+        
+        .service-name {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .service-price {
+            font-size: 1.4rem;
+            color: #d32f2f;
+            font-weight: bold;
+            margin: 8px 0;
+        }
+        
+        .counter-controls {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .counter-btn {
+            width: 55px;
+            height: 55px;
+            border-radius: 50%;
+            border: none;
+            background: linear-gradient(135deg, #d32f2f, #f44336);
+            color: white;
+            font-size: 1.6rem;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            touch-action: manipulation;
+            transition: all 0.2s;
+            box-shadow: 0 4px 10px rgba(211, 47, 47, 0.3);
+        }
+        
+        .counter-btn:active {
+            transform: scale(0.95);
+            box-shadow: 0 2px 5px rgba(211, 47, 47, 0.3);
+        }
+        
+        .counter-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            min-width: 60px;
+            text-align: center;
+            color: #333;
+        }
+        
+        .today-summary {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .summary-box {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 14px;
+            text-align: center;
+            border: 2px solid #e0e0e0;
+            transition: all 0.3s ease;
+        }
+        
+        .summary-box:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .summary-box h3 {
+            color: #555;
+            font-size: 0.85rem;
+            margin-bottom: 10px;
+        }
+        
+        .summary-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .summary-box.total {
+            background: linear-gradient(135deg, #4CAF50, #2E7D32);
+            color: white;
+            border-color: #4CAF50;
+        }
+        
+        .summary-box.total h3, .summary-box.total .summary-value {
+            color: white;
+        }
+        
+        .table-container {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            margin: 20px 0;
+            border-radius: 12px;
+            border: 2px solid #f0f0f0;
+            background: white;
+        }
+        
+        .earnings-table, .customer-log-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 500px; /* FIX: Ensure minimum width for table */
+        }
+        
+        /* FIX: Make tables more mobile-friendly */
+        .earnings-table th, .earnings-table td,
+        .customer-log-table th, .customer-log-table td {
+            padding: 14px 10px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+            white-space: nowrap;
+            font-size: 0.95rem;
+        }
+        
+        .earnings-table th, .customer-log-table th {
+            background: #f8f9fa;
+            color: #555;
+            font-weight: 700;
+            font-size: 0.9rem;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        
+        .earnings-table tr:hover, .customer-log-table tr:hover {
+            background: #f9f9f9;
+        }
+        
+        .service-earning {
+            font-weight: bold;
+            color: #d32f2f;
+            font-size: 1rem;
+        }
+        
+        .customer-form {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 18px;
+            margin-top: 20px;
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .form-group label {
+            margin-bottom: 10px;
+            font-weight: 700;
+            color: #555;
+            font-size: 0.95rem;
+        }
+        
+        .form-group input,
+        .form-group select {
+            padding: 16px;
+            border: 2px solid #ddd;
+            border-radius: 12px;
+            font-size: 1rem;
+            background: white;
+            height: 55px;
+            transition: all 0.3s;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus {
+            border-color: #d32f2f;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(211, 47, 47, 0.1);
+        }
+        
+        .add-customer-btn {
+            background: linear-gradient(135deg, #4CAF50, #2E7D32);
+            color: white;
+            border: none;
+            padding: 18px;
+            border-radius: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 1.1rem;
+            margin-top: 15px;
+            height: 55px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+        }
+        
+        .add-customer-btn:active {
+            transform: scale(0.98);
+        }
+        
+        .graph-container {
+            height: 280px;
+            margin-top: 20px;
+            width: 100%;
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            border: 2px solid #f0f0f0;
+        }
+        
+        .controls {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-top: 25px;
+        }
+        
+        .action-btn {
+            padding: 18px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            height: 60px;
+            transition: all 0.3s;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        
+        .action-btn:active {
+            transform: scale(0.98);
+        }
+        
+        .save-btn {
+            background: linear-gradient(135deg, #4CAF50, #2E7D32);
+            color: white;
+        }
+        
+        .reset-btn {
+            background: linear-gradient(135deg, #f44336, #c62828);
+            color: white;
+        }
+        
+        .new-day-btn {
+            background: linear-gradient(135deg, #2196F3, #1565C0);
+            color: white;
+        }
+        
+        .backup-btn {
+            background: linear-gradient(135deg, #FF9800, #EF6C00);
+            color: white;
+        }
+        
+        .custom-amount-container {
+            display: none;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 2px solid #eee;
+        }
+        
+        .custom-amount-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 15px;
+            cursor: pointer;
+            padding: 16px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            font-size: 1rem;
+            color: #555;
+            border: 2px solid #e0e0e0;
+            transition: all 0.3s;
+        }
+        
+        .custom-amount-toggle.active {
+            background: #ffebee;
+            border-color: #d32f2f;
+        }
+        
+        .custom-amount-toggle i {
+            transition: transform 0.3s;
+        }
+        
+        .custom-amount-toggle.active i {
+            transform: rotate(180deg);
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            padding: 25px;
+            color: #666;
+            font-size: 0.95rem;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            border: 2px solid #f0f0f0;
+        }
+        
+        .notification {
+            position: fixed;
+            top: 90px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, #4CAF50, #2E7D32);
+            color: white;
+            padding: 16px 25px;
+            border-radius: 12px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+            z-index: 1000;
+            animation: slideDown 0.3s ease-out;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            max-width: 90%;
+            text-align: center;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+        
+        .notification.error {
+            background: linear-gradient(135deg, #f44336, #c62828);
+        }
+        
+        .notification.warning {
+            background: linear-gradient(135deg, #FF9800, #EF6C00);
+        }
+        
+        .history-table-container {
+            margin: 25px 0;
+        }
+        
+        .history-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            min-width: 500px; /* FIX: Ensure minimum width for history table */
+        }
+        
+        .history-table thead {
+            background: #f8f9fa;
+        }
+        
+        .history-table th {
+            padding: 16px 10px;
+            font-weight: 700;
+            color: #555;
+            text-align: left;
+            border-bottom: 3px solid #e0e0e0;
+            font-size: 0.9rem;
+        }
+        
+        .history-table td {
+            padding: 14px 10px;
+            border-bottom: 1px solid #eee;
+            font-size: 0.95rem;
+        }
+        
+        .history-date {
+            font-weight: 700;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .history-date i {
+            color: #d32f2f;
+            font-size: 1rem;
+        }
+        
+        .history-amount {
+            font-weight: bold;
+            color: #4CAF50;
+            font-size: 1rem;
+        }
+        
+        .history-customers, .history-services {
+            text-align: center;
+            color: #666;
+            font-weight: 600;
+        }
+        
+        .history-customers span, .history-services span {
+            display: inline-block;
+            padding: 6px 12px;
+            background: #e3f2fd;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            color: #1976D2;
+            font-weight: 700;
+        }
+        
+        .history-empty {
+            text-align: center;
+            padding: 50px 25px;
+            color: #999;
+        }
+        
+        .history-empty i {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            color: #eee;
+        }
+        
+        .day-details-container {
+            background: white;
+            border-radius: 16px;
+            padding: 25px;
+            margin-top: 25px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            border: 2px solid #f0f0f0;
+        }
+        
+        .day-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid #ffebee;
+        }
+        
+        .day-header h2 {
+            color: #d32f2f;
+            font-size: 1.4rem;
+        }
+        
+        .day-total {
+            background: linear-gradient(135deg, #4CAF50, #2E7D32);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-weight: bold;
+            font-size: 1.2rem;
+            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+        }
+        
+        .service-detail-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px;
+            margin: 10px 0;
+            background: #f8f9fa;
+            border-radius: 12px;
+            border: 2px solid #e0e0e0;
+            transition: all 0.3s;
+        }
+        
+        .service-detail-row:hover {
+            border-color: #d32f2f;
+            transform: translateX(5px);
+        }
+        
+        .service-detail-name {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-weight: 700;
+            color: #333;
+            font-size: 1rem;
+        }
+        
+        .service-detail-count {
+            background: linear-gradient(135deg, #d32f2f, #f44336);
+            color: white;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.95rem;
+            box-shadow: 0 3px 8px rgba(211, 47, 47, 0.3);
+        }
+        
+        .service-detail-amount {
+            font-weight: bold;
+            color: #4CAF50;
+            font-size: 1rem;
+        }
+        
+        .filter-controls {
+            display: flex;
+            gap: 10px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        
+        .filter-btn {
+            padding: 12px 18px;
+            background: #f8f9fa;
+            border: 2px solid #ddd;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #555;
+            transition: all 0.3s;
+        }
+        
+        .filter-btn.active {
+            background: linear-gradient(135deg, #d32f2f, #f44336);
+            color: white;
+            border-color: #d32f2f;
+            box-shadow: 0 4px 10px rgba(211, 47, 47, 0.3);
+        }
+        
+        .install-app-btn {
+            position: fixed;
+            bottom: 90px;
+            right: 15px;
+            background: linear-gradient(135deg, #9C27B0, #7B1FA2);
+            color: white;
+            border: none;
+            padding: 14px 20px;
+            border-radius: 30px;
+            font-weight: bold;
+            z-index: 1000;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            display: none;
+            transition: all 0.3s;
+        }
+        
+        .install-app-btn.visible {
+            display: flex;
+        }
+        
+        .install-app-btn:active {
+            transform: scale(0.95);
+        }
+        
+        .loading-spinner {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.95);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .spinner {
+            width: 60px;
+            height: 60px;
+            border: 5px solid #e0e0e0;
+            border-top-color: #d32f2f;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        .nav-links {
+            display: none;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        @keyframes slideDown {
+            from { transform: translate(-50%, -30px); opacity: 0; }
+            to { transform: translate(-50%, 0); opacity: 1; }
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Tablet View (768px and up) */
+        @media (min-width: 768px) {
+            body {
+                padding-bottom: 0;
+            }
+            
+            .bottom-nav {
+                display: none;
+            }
+            
+            .mobile-nav {
+                display: none;
+            }
+            
+            .nav-links {
+                display: flex;
+                gap: 15px;
+            }
+            
+            .nav-link {
+                padding: 10px 20px;
+                text-decoration: none;
+                color: #555;
+                font-weight: 700;
+                border-radius: 25px;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                font-size: 1rem;
+                border: 2px solid transparent;
+                transition: all 0.3s;
+            }
+            
+            .nav-link:hover {
+                background: #ffebee;
+                color: #d32f2f;
+            }
+            
+            .nav-link.active {
+                background: linear-gradient(135deg, #d32f2f, #f44336);
+                color: white;
+                border-color: #d32f2f;
+                box-shadow: 0 4px 15px rgba(211, 47, 47, 0.3);
+            }
+            
+            .mobile-menu-btn {
+                display: none;
+            }
+            
+            .services-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .hero-stats {
+                grid-template-columns: repeat(4, 1fr);
+            }
+            
+            .today-summary {
+                grid-template-columns: repeat(4, 1fr);
+            }
+            
+            .controls {
+                grid-template-columns: repeat(4, 1fr);
+            }
+            
+            .container {
+                max-width: 1200px;
+                margin: 0 auto;
+                padding: 25px 20px;
+            }
+            
+            .install-app-btn {
+                bottom: 25px;
+                right: 25px;
+            }
+            
+            /* FIX: Better table styling for desktop */
+            .earnings-table, .customer-log-table {
+                min-width: auto;
+            }
+            
+            .earnings-table th, .earnings-table td,
+            .customer-log-table th, .customer-log-table td {
+                padding: 16px 15px;
+                font-size: 1rem;
+            }
+        }
+        
+        /* Mobile Landscape */
+        @media (max-height: 600px) and (orientation: landscape) {
+            .bottom-nav {
+                padding: 8px 0 5px;
+            }
+            
+            .bottom-nav-item i {
+                font-size: 1.2rem;
+                margin-bottom: 2px;
+            }
+            
+            .bottom-nav-item span {
+                font-size: 0.7rem;
+            }
+        }
+        
+        /* Small Phones */
+        @media (max-width: 360px) {
+            .hero {
+                padding: 20px 15px;
+            }
+            
+            .hero h1 {
+                font-size: 1.7rem;
+            }
+            
+            .card {
+                padding: 20px;
+            }
+            
+            .counter-btn {
+                width: 50px;
+                height: 50px;
+                font-size: 1.4rem;
+            }
+            
+            .counter-value {
+                font-size: 1.6rem;
+            }
+            
+            .service-icon {
+                width: 45px;
+                height: 45px;
+            }
+            
+            .service-name {
+                font-size: 1.1rem;
+            }
+            
+            /* FIX: Smaller table cells for very small phones */
+            .earnings-table th, .earnings-table td,
+            .customer-log-table th, .customer-log-table td {
+                padding: 12px 8px;
+                font-size: 0.9rem;
+            }
+            
+            .history-table th, .history-table td {
+                padding: 12px 8px;
+                font-size: 0.9rem;
+            }
+        }
+        
+        /* Extra small phones - horizontal scroll for tables */
+        @media (max-width: 320px) {
+            .table-container {
+                margin-left: -10px;
+                margin-right: -10px;
+                border-radius: 0;
+                border-left: none;
+                border-right: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Spinner -->
+    <div class="loading-spinner" id="loadingSpinner">
+        <div class="spinner"></div>
+        <p>Loading...</p>
+    </div>
+    
+    <!-- Top Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo" id="logoHomeBtn">
+                <i class="fas fa-cut"></i>
+                <span>SalonPro</span>
+            </div>
+            
+            <div class="nav-links" id="navLinks">
+                <a href="#" class="nav-link active" data-page="home">
+                    <i class="fas fa-home"></i> Home
+                </a>
+                <a href="#" class="nav-link" data-page="salonTypes">
+                    <i class="fas fa-cut"></i> Services
+                </a>
+                <a href="#" class="nav-link" data-page="todayEarnings">
+                    <i class="fas fa-money-bill"></i> Today
+                </a>
+                <a href="#" class="nav-link" data-page="history">
+                    <i class="fas fa-history"></i> History
+                </a>
+                <a href="#" class="nav-link" data-page="graph">
+                    <i class="fas fa-chart-line"></i> Graph
+                </a>
+                <a href="#" class="nav-link" data-page="backup">
+                    <i class="fas fa-database"></i> Backup
+                </a>
+            </div>
+            
+            <button class="mobile-menu-btn" id="mobileMenuBtn">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Mobile Navigation Drawer -->
+    <div class="mobile-nav" id="mobileNav">
+        <a href="#" class="mobile-nav-item active" data-page="home">
+            <i class="fas fa-home"></i>
+            <span>Home</span>
+        </a>
+        <a href="#" class="mobile-nav-item" data-page="salonTypes">
+            <i class="fas fa-cut"></i>
+            <span>Services</span>
+        </a>
+        <a href="#" class="mobile-nav-item" data-page="todayEarnings">
+            <i class="fas fa-money-bill"></i>
+            <span>Today's Earnings</span>
+        </a>
+        <a href="#" class="mobile-nav-item" data-page="history">
+            <i class="fas fa-history"></i>
+            <span>History</span>
+        </a>
+        <a href="#" class="mobile-nav-item" data-page="graph">
+            <i class="fas fa-chart-line"></i>
+            <span>Graph</span>
+        </a>
+        <a href="#" class="mobile-nav-item" data-page="backup">
+            <i class="fas fa-database"></i>
+            <span>Backup</span>
+        </a>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container">
+        <section id="home" class="page-section active">
+            <div class="hero">
+                <h1>SalonPro</h1>
+                <p>Complete salon management solution</p>
+                
+                <div class="date-display">
+                    <i class="fas fa-calendar-alt"></i> 
+                    <span id="currentDate">Loading date...</span>
+                </div>
+                
+                <div class="hero-stats">
+                    <div class="hero-stat">
+                        <i class="fas fa-money-bill-wave"></i>
+                        <h3>Today's Earnings</h3>
+                        <div class="hero-stat-value">₹<span id="homeTodayEarnings">0</span></div>
+                    </div>
+                    <div class="hero-stat">
+                        <i class="fas fa-users"></i>
+                        <h3>Today's Customers</h3>
+                        <div class="hero-stat-value" id="homeTodayCustomers">0</div>
+                    </div>
+                    <div class="hero-stat">
+                        <i class="fas fa-cut"></i>
+                        <h3>Services Today</h3>
+                        <div class="hero-stat-value" id="homeTodayServices">0</div>
+                    </div>
+                    <div class="hero-stat">
+                        <i class="fas fa-chart-line"></i>
+                        <h3>Weekly Average</h3>
+                        <div class="hero-stat-value">₹<span id="homeWeeklyAvg">0</span></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <h2 class="card-title"><i class="fas fa-bolt"></i> Quick Actions</h2>
+                <div class="controls">
+                    <button class="action-btn save-btn" id="saveDataBtn">
+                        <i class="fas fa-save"></i> Save Data
+                    </button>
+                    <button class="action-btn reset-btn" id="resetTodayBtn">
+                        <i class="fas fa-redo"></i> Reset
+                    </button>
+                    <button class="action-btn new-day-btn" id="newDayBtn">
+                        <i class="fas fa-calendar-plus"></i> New Day
+                    </button>
+                    <button class="action-btn backup-btn" id="backupPageBtn">
+                        <i class="fas fa-database"></i> Backup
+                    </button>
+                </div>
+            </div>
+            
+            <div class="card">
+                <h2 class="card-title"><i class="fas fa-chart-pie"></i> Today's Overview</h2>
+                <div class="graph-container">
+                    <canvas id="homeChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <section id="salonTypes" class="page-section">
+            <div class="card">
+                <h2 class="card-title"><i class="fas fa-cut"></i> Salon Services</h2>
+                <p style="color: #666; margin-bottom: 15px;">Tap +/- to adjust service counts</p>
+                
+                <div class="services-grid" id="serviceList">
+                    <!-- Services will be loaded here -->
+                </div>
+            </div>
+            
+            <div class="card">
+                <h2 class="card-title"><i class="fas fa-user-plus"></i> Add Customer</h2>
+                <div class="customer-form">
+                    <div class="form-group">
+                        <label for="customerName">Customer Name (Optional)</label>
+                        <input type="text" id="customerName" placeholder="Enter customer name">
+                    </div>
+                    <div class="form-group">
+                        <label for="serviceSelect">Select Service</label>
+                        <select id="serviceSelect">
+                            <!-- Options will be loaded here -->
+                        </select>
+                    </div>
+                    <div class="custom-amount-toggle" id="customAmountToggle">
+                        <span>Use custom amount?</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="custom-amount-container" id="customAmountContainer">
+                        <div class="form-group">
+                            <label for="customAmount">Custom Amount (₹)</label>
+                            <input type="number" id="customAmount" placeholder="Enter custom amount" min="0">
+                        </div>
+                    </div>
+                    <button class="add-customer-btn" id="addCustomerBtn">
+                        <i class="fas fa-user-check"></i> Add Customer
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <section id="todayEarnings" class="page-section">
+            <div class="card">
+                <h2 class="card-title"><i class="fas fa-money-bill"></i> Today's Earnings</h2>
+                
+                <div class="today-summary">
+                    <div class="summary-box">
+                        <h3>Services</h3>
+                        <div class="summary-value" id="totalServices">0</div>
+                    </div>
+                    <div class="summary-box">
+                        <h3>Customers</h3>
+                        <div class="summary-value" id="totalCustomers">0</div>
+                    </div>
+                    <div class="summary-box">
+                        <h3>Avg per Customer</h3>
+                        <div class="summary-value">₹<span id="avgPerCustomer">0</span></div>
+                    </div>
+                    <div class="summary-box total">
+                        <h3>Total Earnings</h3>
+                        <div class="summary-value">₹<span id="totalEarnings">0</span></div>
+                    </div>
+                </div>
+                
+                <h3 class="card-title"><i class="fas fa-list"></i> Service Breakdown</h3>
+                <div class="table-container">
+                    <table class="earnings-table">
+                        <thead>
+                            <tr>
+                                <th>Service</th>
+                                <th>Price</th>
+                                <th>Count</th>
+                                <th>Earnings</th>
+                            </tr>
+                        </thead>
+                        <tbody id="earningsTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <div class="card">
+                <h3 class="card-title"><i class="fas fa-history"></i> Customer Log</h3>
+                <div class="table-container">
+                    <table class="customer-log-table">
+                        <thead>
+                            <tr>
+                                <th>Time</th>
+                                <th>Customer</th>
+                                <th>Service</th>
+                                <th>Price</th>
+                            </tr>
+                        </thead>
+                        <tbody id="customerLogBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <section id="history" class="page-section">
+            <div class="card">
+                <h2 class="card-title"><i class="fas fa-history"></i> Earnings History</h2>
+                <p style="color: #666; margin-bottom: 20px;">View earnings history by date. Click on any row to see details.</p>
+                
+                <div class="filter-controls">
+                    <button class="filter-btn active" data-filter="all">All Days</button>
+                    <button class="filter-btn" data-filter="week">Last 7 Days</button>
+                    <button class="filter-btn" data-filter="month">This Month</button>
+                    <button class="filter-btn" data-filter="year">This Year</button>
+                </div>
+                
+                <div class="table-container history-table-container">
+                    <table class="history-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Total Earnings</th>
+                                <th>Customers</th>
+                                <th>Services</th>
+                            </tr>
+                        </thead>
+                        <tbody id="historyTableBody"></tbody>
+                    </table>
+                </div>
+                
+                <div id="historyEmpty" class="history-empty" style="display: none;">
+                    <i class="fas fa-calendar-times"></i>
+                    <h3>No History Data</h3>
+                    <p>Save today's data to start building your earnings history.</p>
+                </div>
+                
+                <div style="margin-top: 25px;">
+                    <h3 style="margin-bottom: 15px; color: #555; font-size: 1.1rem;">Search Specific Date</h3>
+                    <div class="customer-form">
+                        <div class="form-group">
+                            <label for="historyDate">Select Date</label>
+                            <input type="date" id="historyDate" max="">
+                        </div>
+                        <button class="add-customer-btn" id="loadHistoryBtn">
+                            <i class="fas fa-search"></i> Load Date Details
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="day-details-container" id="historyResults" style="display: none;"></div>
+            </div>
+        </section>
+
+        <section id="graph" class="page-section">
+            <div class="card">
+                <h2 class="card-title"><i class="fas fa-chart-line"></i> Earnings Graph</h2>
+                <p style="color: #666; margin-bottom: 15px;">Earnings trend over last 7 days</p>
+                <div class="graph-container">
+                    <canvas id="earningsChart"></canvas>
+                </div>
+            </div>
+            
+            <div class="card">
+                <h2 class="card-title"><i class="fas fa-chart-pie"></i> Service Distribution</h2>
+                <p style="color: #666; margin-bottom: 15px;">Service contribution to earnings</p>
+                <div class="graph-container">
+                    <canvas id="serviceDistributionChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <section id="backup" class="page-section">
+            <div class="card">
+                <h2 class="card-title"><i class="fas fa-database"></i> Data Backup & Restore</h2>
+                
+                <div class="today-summary">
+                    <div class="summary-box">
+                        <i class="fas fa-history"></i>
+                        <h3>History Days</h3>
+                        <div class="summary-value" id="backupHistoryCount">0</div>
+                    </div>
+                    <div class="summary-box">
+                        <i class="fas fa-calendar"></i>
+                        <h3>Last Backup</h3>
+                        <div class="summary-value" id="lastBackupDate">Never</div>
+                    </div>
+                    <div class="summary-box">
+                        <i class="fas fa-file-export"></i>
+                        <h3>File Size</h3>
+                        <div class="summary-value" id="dataSize">0 KB</div>
+                    </div>
+                    <div class="summary-box total">
+                        <i class="fas fa-save"></i>
+                        <h3>Auto Save</h3>
+                        <div class="summary-value">ON</div>
+                    </div>
+                </div>
+                
+                <div class="controls">
+                    <button class="action-btn save-btn" id="exportDataBtn">
+                        <i class="fas fa-download"></i> Export Data
+                    </button>
+                    <button class="action-btn new-day-btn" id="importDataBtn">
+                        <i class="fas fa-upload"></i> Import Data
+                    </button>
+                    <button class="action-btn history-btn" id="backupNowBtn">
+                        <i class="fas fa-cloud-upload-alt"></i> Backup Now
+                    </button>
+                    <button class="action-btn reset-btn" id="clearAllBtn">
+                        <i class="fas fa-trash-alt"></i> Clear All
+                    </button>
+                </div>
+                
+                <div style="margin-top: 25px; padding: 20px; background: #e8f5e9; border-radius: 12px; border: 2px solid #c8e6c9;">
+                    <h3 style="color: #2e7d32; margin-bottom: 12px; font-size: 1.1rem;">
+                        <i class="fas fa-info-circle"></i> Data Protection
+                    </h3>
+                    <p style="color: #555; font-size: 0.95rem; line-height: 1.5;">
+                        Your data is automatically saved locally. For phone resets, 
+                        <strong>export your data regularly</strong> and save the backup file 
+                        to Google Drive, Email, or any cloud storage.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <div class="footer">
+            <p><strong>SalonPro - Complete Salon Management</strong></p>
+            <p>Version 3.0 | Data Safe & Mobile Optimized</p>
+            <p style="margin-top: 10px; font-size: 0.85rem; color: #888;">
+                Auto-saves every 2 minutes | Works offline
+            </p>
+        </div>
+    </div>
+
+    <!-- Bottom Navigation for Android -->
+    <div class="bottom-nav">
+        <a href="#" class="bottom-nav-item active" data-page="home">
+            <i class="fas fa-home"></i>
+            <span>Home</span>
+        </a>
+        <a href="#" class="bottom-nav-item" data-page="salonTypes">
+            <i class="fas fa-cut"></i>
+            <span>Services</span>
+        </a>
+        <a href="#" class="bottom-nav-item" data-page="todayEarnings">
+            <i class="fas fa-money-bill"></i>
+            <span>Today</span>
+        </a>
+        <a href="#" class="bottom-nav-item" data-page="history">
+            <i class="fas fa-history"></i>
+            <span>History</span>
+        </a>
+        <a href="#" class="bottom-nav-item" data-page="graph">
+            <i class="fas fa-chart-line"></i>
+            <span>Graph</span>
+        </a>
+    </div>
+
+    <!-- Install App Button -->
+    <button class="install-app-btn" id="installAppBtn">
+        <i class="fas fa-download"></i> Install App
+    </button>
+
+    <script>
+        // Salon Services Data
+        const salonServices = [
+            { id: 1, name: "Cutting", price: 80, icon: "fas fa-cut", count: 0, dailyEarnings: 0 },
+            { id: 2, name: "Shaving", price: 50, icon: "fas fa-air-freshener", count: 0, dailyEarnings: 0 },
+            { id: 3, name: "Cutting + Shaving", price: 120, icon: "fas fa-cut", count: 0, dailyEarnings: 0 },
+            { id: 4, name: "Thadi Othukuthal", price: 60, icon: "fas fa-user-tie", count: 0, dailyEarnings: 0 },
+            { id: 5, name: "Children Cutting", price: 60, icon: "fas fa-child", count: 0, dailyEarnings: 0 },
+            { id: 6, name: "Cutting + Shaving + Hair Tie", price: 170, icon: "fas fa-ribbon", count: 0, dailyEarnings: 0 }
+        ];
+
+        // Earnings data structure
+        let earningsData = {
+            today: {
+                date: "",
+                dateStr: "",
+                services: [],
+                totalCustomers: 0,
+                totalEarnings: 0,
+                customerLog: []
+            },
+            history: []
+        };
+
+        // Chart instances
+        let earningsChart = null;
+        let serviceDistributionChart = null;
+        let homeChart = null;
+
+        // DOM Elements
+        const serviceList = document.getElementById('serviceList');
+        const serviceSelect = document.getElementById('serviceSelect');
+        const customerName = document.getElementById('customerName');
+        const customAmount = document.getElementById('customAmount');
+        const customAmountToggle = document.getElementById('customAmountToggle');
+        const customAmountContainer = document.getElementById('customAmountContainer');
+        const addCustomerBtn = document.getElementById('addCustomerBtn');
+        const earningsTableBody = document.getElementById('earningsTableBody');
+        const customerLogBody = document.getElementById('customerLogBody');
+        const totalServices = document.getElementById('totalServices');
+        const totalCustomers = document.getElementById('totalCustomers');
+        const totalEarnings = document.getElementById('totalEarnings');
+        const avgPerCustomer = document.getElementById('avgPerCustomer');
+        const currentDate = document.getElementById('currentDate');
+        const saveDataBtn = document.getElementById('saveDataBtn');
+        const resetTodayBtn = document.getElementById('resetTodayBtn');
+        const newDayBtn = document.getElementById('newDayBtn');
+        const historyDate = document.getElementById('historyDate');
+        const loadHistoryBtn = document.getElementById('loadHistoryBtn');
+        const historyResults = document.getElementById('historyResults');
+        const historyTableBody = document.getElementById('historyTableBody');
+        const historyEmpty = document.getElementById('historyEmpty');
+        const homeTodayEarnings = document.getElementById('homeTodayEarnings');
+        const homeTodayCustomers = document.getElementById('homeTodayCustomers');
+        const homeTodayServices = document.getElementById('homeTodayServices');
+        const homeWeeklyAvg = document.getElementById('homeWeeklyAvg');
+        const installAppBtn = document.getElementById('installAppBtn');
+        const backupHistoryCount = document.getElementById('backupHistoryCount');
+        const lastBackupDate = document.getElementById('lastBackupDate');
+        const dataSize = document.getElementById('dataSize');
+        const loadingSpinner = document.getElementById('loadingSpinner');
+        const bottomNavItems = document.querySelectorAll('.bottom-nav-item');
+        const mobileNavItems = document.querySelectorAll('.mobile-nav-item');
+        const navLinks = document.querySelectorAll('.nav-link');
+        const pageSections = document.querySelectorAll('.page-section');
+        const logoHomeBtn = document.getElementById('logoHomeBtn');
+        const backupPageBtn = document.getElementById('backupPageBtn');
+        const exportDataBtn = document.getElementById('exportDataBtn');
+        const importDataBtn = document.getElementById('importDataBtn');
+        const backupNowBtn = document.getElementById('backupNowBtn');
+        const clearAllBtn = document.getElementById('clearAllBtn');
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const mobileNav = document.getElementById('mobileNav');
+
+        // Initialize the app
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log("Initializing SalonPro...");
+            
+            // Show loading spinner
+            loadingSpinner.style.display = 'flex';
+            
+            // Set current date
+            const today = new Date();
+            const formattedDate = formatDate(today);
+            const todayStr = formatDateForStorage(today);
+            currentDate.textContent = formattedDate;
+            earningsData.today.date = formattedDate;
+            earningsData.today.dateStr = todayStr;
+            
+            // Set max date for history search to today
+            historyDate.max = todayStr;
+            historyDate.value = todayStr;
+            
+            // Load saved data
+            loadSavedData();
+            
+            // Initialize services
+            initializeServices();
+            
+            // Populate service select dropdown
+            populateServiceSelect();
+            
+            // Render UI
+            renderServices();
+            renderEarningsTable();
+            renderCustomerLog();
+            updateTodaySummary();
+            updateHomeStats();
+            updateBackupStats();
+            
+            // Initialize charts
+            setTimeout(() => {
+                initializeEarningsChart();
+                initializeServiceDistributionChart();
+                initializeHomeChart();
+            }, 100);
+            
+            // Initialize history table
+            updateHistoryTable();
+            
+            // Add event listeners
+            addCustomerBtn.addEventListener('click', addCustomerEntry);
+            saveDataBtn.addEventListener('click', saveTodayData);
+            resetTodayBtn.addEventListener('click', resetTodayCounts);
+            newDayBtn.addEventListener('click', startNewDay);
+            loadHistoryBtn.addEventListener('click', loadDailyHistory);
+            
+            // Custom amount toggle
+            customAmountToggle.addEventListener('click', function() {
+                customAmountToggle.classList.toggle('active');
+                customAmountContainer.style.display = customAmountContainer.style.display === 'block' ? 'none' : 'block';
+            });
+            
+            // Mobile menu toggle
+            mobileMenuBtn.addEventListener('click', function() {
+                mobileNav.style.display = 'block';
+                setTimeout(() => {
+                    mobileNav.classList.toggle('active');
+                }, 10);
+            });
+            
+            // Close mobile menu when clicking outside
+            document.addEventListener('click', function(e) {
+                if (!mobileNav.contains(e.target) && e.target !== mobileMenuBtn) {
+                    mobileNav.classList.remove('active');
+                    setTimeout(() => {
+                        mobileNav.style.display = 'none';
+                    }, 300);
+                }
+            });
+            
+            // Navigation links - DESKTOP
+            navLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const pageId = this.getAttribute('data-page');
+                    showPage(pageId);
+                    
+                    // Update nav links
+                    updateDesktopNav(pageId);
+                    
+                    // Close mobile nav if open
+                    if (mobileNav.classList.contains('active')) {
+                        mobileNav.classList.remove('active');
+                        setTimeout(() => {
+                            mobileNav.style.display = 'none';
+                        }, 300);
+                    }
+                });
+            });
+            
+            // Mobile navigation
+            mobileNavItems.forEach(item => {
+                item.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const pageId = this.getAttribute('data-page');
+                    showPage(pageId);
+                    
+                    // Update mobile nav
+                    updateMobileNav(pageId);
+                    
+                    // Close mobile menu
+                    mobileNav.classList.remove('active');
+                    setTimeout(() => {
+                        mobileNav.style.display = 'none';
+                    }, 300);
+                    
+                    // Update bottom nav
+                    updateBottomNav(pageId);
+                });
+            });
+            
+            // Bottom navigation - MOBILE
+            bottomNavItems.forEach(item => {
+                item.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const pageId = this.getAttribute('data-page');
+                    showPage(pageId);
+                    
+                    // Update bottom nav
+                    updateBottomNav(pageId);
+                    
+                    // Update mobile nav
+                    updateMobileNav(pageId);
+                    
+                    // Update desktop nav if visible
+                    if (window.innerWidth >= 768) {
+                        updateDesktopNav(pageId);
+                    }
+                });
+            });
+            
+            // Logo home button
+            logoHomeBtn.addEventListener('click', function() {
+                showPage('home');
+                updateBottomNav('home');
+                updateMobileNav('home');
+                updateDesktopNav('home');
+            });
+            
+            // Backup page button
+            backupPageBtn.addEventListener('click', function() {
+                showPage('backup');
+                updateBottomNav('backup');
+                updateMobileNav('backup');
+                updateDesktopNav('backup');
+            });
+            
+            // Backup page buttons
+            exportDataBtn.addEventListener('click', exportData);
+            importDataBtn.addEventListener('click', importData);
+            backupNowBtn.addEventListener('click', backupToMultipleSources);
+            clearAllBtn.addEventListener('click', clearAllData);
+            
+            // Filter buttons
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    const filter = this.dataset.filter;
+                    updateHistoryTable(filter);
+                });
+            });
+            
+            // Check for PWA install prompt
+            window.addEventListener('beforeinstallprompt', (e) => {
+                e.preventDefault();
+                installAppBtn.style.display = 'flex';
+                installAppBtn.addEventListener('click', () => {
+                    e.prompt();
+                    installAppBtn.style.display = 'none';
+                });
+            });
+            
+            // Hide loading spinner
+            setTimeout(() => {
+                loadingSpinner.style.display = 'none';
+            }, 500);
+            
+            // Auto-save every 2 minutes
+            setInterval(() => {
+                if (hasChangesToday()) {
+                    saveTodayData();
+                }
+            }, 120000);
+            
+            console.log("SalonPro initialized successfully");
+        });
+
+        // Update bottom navigation
+        function updateBottomNav(pageId) {
+            bottomNavItems.forEach(item => {
+                item.classList.remove('active');
+                if (item.getAttribute('data-page') === pageId) {
+                    item.classList.add('active');
+                }
+            });
+        }
+
+        // Update mobile navigation
+        function updateMobileNav(pageId) {
+            mobileNavItems.forEach(item => {
+                item.classList.remove('active');
+                if (item.getAttribute('data-page') === pageId) {
+                    item.classList.add('active');
+                }
+            });
+        }
+
+        // Update desktop navigation
+        function updateDesktopNav(pageId) {
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('data-page') === pageId) {
+                    link.classList.add('active');
+                }
+            });
+        }
+
+        // Show page function
+        function showPage(pageId) {
+            pageSections.forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            document.getElementById(pageId).classList.add('active');
+            
+            // Update specific page data
+            if (pageId === 'graph') {
+                setTimeout(() => {
+                    updateEarningsChart();
+                    updateServiceDistributionChart();
+                }, 100);
+            } else if (pageId === 'home') {
+                setTimeout(() => {
+                    updateHomeChart();
+                    updateHomeStats();
+                }, 100);
+            } else if (pageId === 'history') {
+                updateHistoryTable();
+            } else if (pageId === 'backup') {
+                updateBackupStats();
+            }
+        }
+
+        // Format date
+        function formatDate(date) {
+            return date.toLocaleDateString('en-US', { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            });
+        }
+
+        function formatDateForStorage(date) {
+            const d = new Date(date);
+            d.setHours(0, 0, 0, 0);
+            const year = d.getFullYear();
+            const month = String(d.getMonth() + 1).padStart(2, '0');
+            const day = String(d.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
+        // Load saved data
+        function loadSavedData() {
+            const savedData = localStorage.getItem('salonEarningsData');
+            
+            if (savedData) {
+                try {
+                    earningsData = JSON.parse(savedData);
+                    console.log("Data loaded:", earningsData.history.length, "days");
+                } catch (e) {
+                    console.error('Error loading data:', e);
+                    earningsData = {
+                        today: {
+                            date: formatDate(new Date()),
+                            dateStr: formatDateForStorage(new Date()),
+                            services: [],
+                            totalCustomers: 0,
+                            totalEarnings: 0,
+                            customerLog: []
+                        },
+                        history: []
+                    };
+                }
+            }
+        }
+
+        // Initialize services
+        function initializeServices() {
+            const todayStr = formatDateForStorage(new Date());
+            const todayData = earningsData.history.find(day => day.dateStr === todayStr);
+            
+            if (todayData) {
+                salonServices.forEach(service => {
+                    const savedService = todayData.services.find(s => s.id === service.id);
+                    if (savedService) {
+                        service.count = savedService.count || 0;
+                        service.dailyEarnings = savedService.dailyEarnings || 0;
+                    }
+                });
+                
+                earningsData.today.customerLog = todayData.customerLog || [];
+                earningsData.today.totalCustomers = todayData.totalCustomers || 0;
+                earningsData.today.totalEarnings = todayData.totalEarnings || 0;
+            }
+        }
+
+        // Populate service select dropdown
+        function populateServiceSelect() {
+            serviceSelect.innerHTML = '';
+            
+            salonServices.forEach(service => {
+                const option = document.createElement('option');
+                option.value = service.id;
+                option.textContent = `${service.name} - ₹${service.price}`;
+                serviceSelect.appendChild(option);
+            });
+        }
+
+        // Render services
+        function renderServices() {
+            serviceList.innerHTML = '';
+            
+            salonServices.forEach(service => {
+                const serviceCard = document.createElement('div');
+                serviceCard.className = 'service-card';
+                serviceCard.innerHTML = `
+                    <div class="service-card-header">
+                        <div class="service-icon">
+                            <i class="${service.icon}"></i>
+                        </div>
+                        <div style="flex: 1;">
+                            <div class="service-name">${service.name}</div>
+                            <div class="service-price">₹${service.price}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="counter-controls">
+                        <button class="counter-btn minus-btn" data-id="${service.id}">-</button>
+                        <div class="counter-value" id="count-${service.id}">${service.count}</div>
+                        <button class="counter-btn plus-btn" data-id="${service.id}">+</button>
+                    </div>
+                    
+                    <div style="display: flex; justify-content: space-between; margin-top: 15px; padding-top: 15px; border-top: 1px solid #eee;">
+                        <div style="text-align: center;">
+                            <div style="font-size: 1.2rem; font-weight: bold; color: #333;">${service.count}</div>
+                            <div style="font-size: 0.8rem; color: #777;">Today</div>
+                        </div>
+                        <div style="text-align: center;">
+                            <div style="font-size: 1.2rem; font-weight: bold; color: #d32f2f;">₹${service.dailyEarnings}</div>
+                            <div style="font-size: 0.8rem; color: #777;">Earnings</div>
+                        </div>
+                    </div>
+                `;
+                
+                serviceCard.querySelector('.plus-btn').addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    updateServiceCount(service.id, 1);
+                });
+                serviceCard.querySelector('.minus-btn').addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    updateServiceCount(service.id, -1);
+                });
+                
+                serviceList.appendChild(serviceCard);
+            });
+        }
+
+        // Update service count
+        function updateServiceCount(serviceId, change) {
+            const service = salonServices.find(s => s.id === serviceId);
+            
+            if (service) {
+                service.count = Math.max(0, service.count + change);
+                service.dailyEarnings = service.count * service.price;
+                
+                document.getElementById(`count-${serviceId}`).textContent = service.count;
+                
+                renderEarningsTable();
+                updateTodaySummary();
+                updateHomeStats();
+                if (serviceDistributionChart) updateServiceDistributionChart();
+                if (homeChart) updateHomeChart();
+                
+                // Auto-save on change
+                setTimeout(() => {
+                    saveTodayData();
+                }, 1000);
+            }
+        }
+
+        // Add customer entry
+        function addCustomerEntry() {
+            const serviceId = parseInt(serviceSelect.value);
+            const service = salonServices.find(s => s.id === serviceId);
+            const name = customerName.value.trim() || "Walk-in Customer";
+            const useCustomAmount = customAmountContainer.style.display === 'block';
+            const customAmountValue = parseFloat(customAmount.value) || 0;
+            
+            if (!service) return;
+            
+            const now = new Date();
+            const time = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+            
+            let price = service.price;
+            if (useCustomAmount && customAmountValue > 0) {
+                price = customAmountValue;
+            }
+            
+            const customerEntry = {
+                id: Date.now(),
+                name: name,
+                serviceId: service.id,
+                serviceName: service.name,
+                price: price,
+                time: time,
+                dateTime: now.toISOString(),
+                isCustomAmount: useCustomAmount && customAmountValue > 0
+            };
+            
+            earningsData.today.customerLog.unshift(customerEntry);
+            
+            if (!useCustomAmount) {
+                updateServiceCount(service.id, 1);
+            } else {
+                service.dailyEarnings += price;
+                earningsData.today.totalEarnings += price;
+                earningsData.today.totalCustomers += 1;
+                
+                renderEarningsTable();
+                updateTodaySummary();
+                updateHomeStats();
+                if (serviceDistributionChart) updateServiceDistributionChart();
+                if (homeChart) updateHomeChart();
+            }
+            
+            // Clear form
+            customerName.value = '';
+            customAmount.value = '';
+            customAmountContainer.style.display = 'none';
+            customAmountToggle.classList.remove('active');
+            
+            renderCustomerLog();
+            showNotification(`Added: ${service.name} at ${time} - ₹${price}`);
+            
+            // Auto-save
+            setTimeout(() => {
+                saveTodayData();
+            }, 1000);
+        }
+
+        // Render customer log
+        function renderCustomerLog() {
+            customerLogBody.innerHTML = '';
+            
+            if (earningsData.today.customerLog.length === 0) {
+                const row = document.createElement('tr');
+                row.innerHTML = `<td colspan="4" style="text-align: center; color: #999; padding: 30px; font-size: 1rem;">No customer entries yet today.</td>`;
+                customerLogBody.appendChild(row);
+                return;
+            }
+            
+            earningsData.today.customerLog.forEach(entry => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${entry.time}</td>
+                    <td>${entry.name}</td>
+                    <td>${entry.serviceName} ${entry.isCustomAmount ? '<span style="color:#FF9800; font-size:0.8rem;">(Custom)</span>' : ''}</td>
+                    <td style="font-weight: bold; color: #4CAF50;">₹${entry.price}</td>
+                `;
+                customerLogBody.appendChild(row);
+            });
+        }
+
+        // Render earnings table
+        function renderEarningsTable() {
+            earningsTableBody.innerHTML = '';
+            
+            let totalServicesCount = 0;
+            let totalEarningsAmount = 0;
+            
+            salonServices.forEach(service => {
+                totalServicesCount += service.count;
+                totalEarningsAmount += service.dailyEarnings;
+                
+                if (service.count > 0) {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${service.name}</td>
+                        <td>₹${service.price}</td>
+                        <td>${service.count}</td>
+                        <td class="service-earning">₹${service.dailyEarnings}</td>
+                    `;
+                    earningsTableBody.appendChild(row);
+                }
+            });
+            
+            // Add custom amounts
+            earningsData.today.customerLog.forEach(entry => {
+                if (entry.isCustomAmount) {
+                    totalEarningsAmount += entry.price;
+                }
+            });
+            
+            const totalRow = document.createElement('tr');
+            totalRow.style.fontWeight = 'bold';
+            totalRow.style.background = '#f8f9fa';
+            totalRow.style.fontSize = '1.1rem';
+            totalRow.innerHTML = `
+                <td colspan="2">TOTAL</td>
+                <td>${totalServicesCount}</td>
+                <td style="color: #4CAF50;">₹${totalEarningsAmount}</td>
+            `;
+            earningsTableBody.appendChild(totalRow);
+        }
+
+        // Update today's summary
+        function updateTodaySummary() {
+            let totalServicesCount = 0;
+            let totalEarningsAmount = 0;
+            let totalCustomersCount = earningsData.today.customerLog.length;
+            
+            salonServices.forEach(service => {
+                totalServicesCount += service.count;
+                totalEarningsAmount += service.dailyEarnings;
+            });
+            
+            earningsData.today.customerLog.forEach(entry => {
+                if (entry.isCustomAmount) {
+                    totalEarningsAmount += entry.price;
+                }
+            });
+            
+            totalServices.textContent = totalServicesCount;
+            totalCustomers.textContent = totalCustomersCount;
+            totalEarnings.textContent = totalEarningsAmount;
+            
+            const avgCustomer = totalCustomersCount > 0 ? (totalEarningsAmount / totalCustomersCount).toFixed(2) : 0;
+            avgPerCustomer.textContent = avgCustomer;
+            
+            earningsData.today.services = salonServices.map(service => ({
+                id: service.id,
+                name: service.name,
+                price: service.price,
+                count: service.count,
+                dailyEarnings: service.dailyEarnings
+            }));
+            
+            earningsData.today.totalCustomers = totalCustomersCount;
+            earningsData.today.totalEarnings = totalEarningsAmount;
+        }
+
+        // Update home page stats
+        function updateHomeStats() {
+            let totalServicesCount = 0;
+            let totalEarningsAmount = 0;
+            let totalCustomersCount = earningsData.today.customerLog.length;
+            
+            salonServices.forEach(service => {
+                totalServicesCount += service.count;
+                totalEarningsAmount += service.dailyEarnings;
+            });
+            
+            earningsData.today.customerLog.forEach(entry => {
+                if (entry.isCustomAmount) {
+                    totalEarningsAmount += entry.price;
+                }
+            });
+            
+            homeTodayEarnings.textContent = totalEarningsAmount;
+            homeTodayCustomers.textContent = totalCustomersCount;
+            homeTodayServices.textContent = totalServicesCount;
+            
+            // Calculate weekly average
+            const weeklyStats = calculatePeriodStats('week');
+            const weeklyAvg = weeklyStats.totalEarnings > 0 ? Math.round(weeklyStats.totalEarnings / 7) : 0;
+            homeWeeklyAvg.textContent = weeklyAvg;
+        }
+
+        // Calculate period stats
+        function calculatePeriodStats(period) {
+            const today = new Date();
+            const periodStart = new Date();
+            
+            if (period === 'week') {
+                periodStart.setDate(today.getDate() - 7);
+            } else if (period === 'month') {
+                periodStart.setMonth(today.getMonth() - 1);
+            } else if (period === 'year') {
+                periodStart.setFullYear(today.getFullYear() - 1);
+            }
+            
+            const periodData = earningsData.history.filter(day => {
+                const dayDate = new Date(day.dateStr);
+                return dayDate >= periodStart && dayDate <= today;
+            });
+            
+            let totalServices = 0;
+            let totalCustomers = 0;
+            let totalEarnings = 0;
+            
+            periodData.forEach(day => {
+                if (day.services) {
+                    day.services.forEach(service => {
+                        totalServices += service.count || 0;
+                    });
+                }
+                totalCustomers += day.totalCustomers || 0;
+                totalEarnings += day.totalEarnings || 0;
+            });
+            
+            return { totalServices, totalCustomers, totalEarnings };
+        }
+
+        // Update backup stats
+        function updateBackupStats() {
+            backupHistoryCount.textContent = earningsData.history.length;
+            
+            const lastBackup = localStorage.getItem('lastBackup');
+            if (lastBackup) {
+                const date = new Date(lastBackup);
+                lastBackupDate.textContent = date.toLocaleDateString('en-US', { 
+                    month: 'short', 
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+            } else {
+                lastBackupDate.textContent = 'Never';
+            }
+            
+            const dataStr = JSON.stringify(earningsData);
+            const sizeKB = (dataStr.length / 1024).toFixed(2);
+            dataSize.textContent = `${sizeKB} KB`;
+        }
+
+        // Update history table
+        function updateHistoryTable(filter = 'all') {
+            historyTableBody.innerHTML = '';
+            
+            if (!earningsData.history || earningsData.history.length === 0) {
+                historyEmpty.style.display = 'block';
+                return;
+            }
+            
+            historyEmpty.style.display = 'none';
+            
+            // Sort by date (newest first)
+            let filteredHistory = [...earningsData.history].sort((a, b) => {
+                return new Date(b.dateStr) - new Date(a.dateStr);
+            });
+            
+            // Apply filter
+            const today = new Date();
+            if (filter === 'week') {
+                const weekAgo = new Date();
+                weekAgo.setDate(today.getDate() - 7);
+                filteredHistory = filteredHistory.filter(day => {
+                    const dayDate = new Date(day.dateStr);
+                    return dayDate >= weekAgo && dayDate <= today;
+                });
+            } else if (filter === 'month') {
+                const monthAgo = new Date();
+                monthAgo.setMonth(today.getMonth() - 1);
+                filteredHistory = filteredHistory.filter(day => {
+                    const dayDate = new Date(day.dateStr);
+                    return dayDate >= monthAgo && dayDate <= today;
+                });
+            } else if (filter === 'year') {
+                const yearAgo = new Date();
+                yearAgo.setFullYear(today.getFullYear() - 1);
+                filteredHistory = filteredHistory.filter(day => {
+                    const dayDate = new Date(day.dateStr);
+                    return dayDate >= yearAgo && dayDate <= today;
+                });
+            }
+            
+            filteredHistory.forEach(day => {
+                const isToday = formatDateForStorage(new Date(day.dateStr)) === formatDateForStorage(new Date());
+                let totalServicesCount = 0;
+                
+                if (day.services) {
+                    day.services.forEach(service => {
+                        totalServicesCount += service.count || 0;
+                    });
+                }
+                
+                const row = document.createElement('tr');
+                row.dataset.date = day.dateStr;
+                row.innerHTML = `
+                    <td>
+                        <div class="history-date">
+                            <i class="fas fa-calendar-day"></i>
+                            <div>
+                                <div>${new Date(day.dateStr).toLocaleDateString('en-US', { 
+                                    weekday: 'short', 
+                                    month: 'short', 
+                                    day: 'numeric' 
+                                })}</div>
+                                ${isToday ? '<div style="font-size: 0.7rem; color: #4CAF50; margin-top: 2px;">Today</div>' : ''}
+                            </div>
+                        </div>
+                    </td>
+                    <td class="history-amount">₹${day.totalEarnings || 0}</td>
+                    <td class="history-customers"><span>${day.totalCustomers || 0}</span></td>
+                    <td class="history-services"><span>${totalServicesCount}</span></td>
+                `;
+                
+                row.addEventListener('click', function() {
+                    historyDate.value = this.dataset.date;
+                    loadDailyHistory();
+                    
+                    // Scroll to results
+                    historyResults.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                });
+                
+                historyTableBody.appendChild(row);
+            });
+        }
+
+        // Load daily history
+        function loadDailyHistory() {
+            const selectedDate = historyDate.value;
+            
+            if (!selectedDate) {
+                showNotification('Please select a date');
+                return;
+            }
+            
+            const dayData = earningsData.history.find(day => day.dateStr === selectedDate);
+            
+            if (!dayData) {
+                historyResults.innerHTML = `
+                    <div style="text-align: center; padding: 40px 20px; color: #777;">
+                        <i class="fas fa-search" style="font-size: 3rem; color: #ddd; margin-bottom: 15px;"></i>
+                        <h3>No Data Found</h3>
+                        <p>No earnings data found for ${new Date(selectedDate).toLocaleDateString()}.</p>
+                    </div>
+                `;
+                historyResults.style.display = 'block';
+                return;
+            }
+            
+            let totalServicesCount = 0;
+            let totalEarningsAmount = dayData.totalEarnings || 0;
+            let totalCustomersCount = dayData.totalCustomers || 0;
+            
+            if (dayData.services) {
+                dayData.services.forEach(service => {
+                    totalServicesCount += service.count || 0;
+                });
+            }
+            
+            let historyHTML = `
+                <div class="day-header">
+                    <h2><i class="fas fa-calendar-day"></i> ${new Date(selectedDate).toLocaleDateString('en-US', { 
+                        weekday: 'long', 
+                        year: 'numeric', 
+                        month: 'long', 
+                        day: 'numeric' 
+                    })}</h2>
+                    <div class="day-total">₹${totalEarningsAmount}</div>
+                </div>
+                
+                <div class="today-summary">
+                    <div class="summary-box" style="background: #e3f2fd; border-color: #2196F3;">
+                        <h3><i class="fas fa-cut"></i> Services</h3>
+                        <div class="summary-value">${totalServicesCount}</div>
+                    </div>
+                    <div class="summary-box" style="background: #f3e5f5; border-color: #9C27B0;">
+                        <h3><i class="fas fa-users"></i> Customers</h3>
+                        <div class="summary-value">${totalCustomersCount}</div>
+                    </div>
+                    <div class="summary-box" style="background: #e8f5e9; border-color: #4CAF50;">
+                        <h3><i class="fas fa-user-check"></i> Avg/Customer</h3>
+                        <div class="summary-value">₹${totalCustomersCount > 0 ? (totalEarningsAmount / totalCustomersCount).toFixed(1) : 0}</div>
+                    </div>
+                    <div class="summary-box total">
+                        <h3><i class="fas fa-money-bill-wave"></i> Total Earnings</h3>
+                        <div class="summary-value">₹${totalEarningsAmount}</div>
+                    </div>
+                </div>
+            `;
+            
+            if (dayData.services && dayData.services.length > 0) {
+                historyHTML += `<h3 style="margin: 25px 0 15px 0; color: #333; font-size: 1.1rem;">Service Breakdown</h3>`;
+                
+                dayData.services.filter(s => s.count > 0).forEach(service => {
+                    historyHTML += `
+                        <div class="service-detail-row">
+                            <div class="service-detail-name">
+                                <div class="service-detail-count">${service.count}</div>
+                                <span>${service.name}</span>
+                            </div>
+                            <div class="service-detail-amount">₹${service.dailyEarnings || service.count * service.price}</div>
+                        </div>
+                    `;
+                });
+            }
+            
+            historyResults.innerHTML = historyHTML;
+            historyResults.style.display = 'block';
+        }
+
+        // Initialize charts
+        function initializeEarningsChart() {
+            const ctx = document.getElementById('earningsChart').getContext('2d');
+            
+            earningsChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'Daily Earnings (₹)',
+                        data: [],
+                        borderColor: '#d32f2f',
+                        backgroundColor: 'rgba(211, 47, 47, 0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: value => '₹' + value
+                            },
+                            grid: {
+                                color: 'rgba(0,0,0,0.05)'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                color: 'rgba(0,0,0,0.05)'
+                            }
+                        }
+                    }
+                }
+            });
+            
+            updateEarningsChart();
+        }
+
+        function updateEarningsChart() {
+            if (!earningsChart) return;
+            
+            const last7Days = [];
+            for (let i = 6; i >= 0; i--) {
+                const date = new Date();
+                date.setDate(date.getDate() - i);
+                last7Days.push({
+                    date: formatDateForStorage(date),
+                    label: date.toLocaleDateString('en-US', { 
+                        weekday: 'short',
+                        month: 'short',
+                        day: 'numeric'
+                    })
+                });
+            }
+            
+            const earningsByDay = last7Days.map(day => {
+                const dayData = earningsData.history.find(d => d.dateStr === day.date);
+                return dayData ? dayData.totalEarnings || 0 : 0;
+            });
+            
+            earningsChart.data.labels = last7Days.map(day => day.label);
+            earningsChart.data.datasets[0].data = earningsByDay;
+            earningsChart.update();
+        }
+
+        function initializeServiceDistributionChart() {
+            const ctx = document.getElementById('serviceDistributionChart').getContext('2d');
+            
+            serviceDistributionChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: salonServices.map(service => service.name),
+                    datasets: [{
+                        data: salonServices.map(service => service.dailyEarnings),
+                        backgroundColor: [
+                            '#d32f2f',
+                            '#f44336',
+                            '#ff5722',
+                            '#ff9800',
+                            '#4CAF50',
+                            '#2196F3'
+                        ],
+                        borderWidth: 2,
+                        borderColor: '#fff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 20,
+                                font: {
+                                    size: 11
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateServiceDistributionChart() {
+            if (!serviceDistributionChart) return;
+            
+            serviceDistributionChart.data.datasets[0].data = salonServices.map(service => service.dailyEarnings);
+            serviceDistributionChart.update();
+        }
+
+        function initializeHomeChart() {
+            const ctx = document.getElementById('homeChart').getContext('2d');
+            
+            homeChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: salonServices.map(service => service.name),
+                    datasets: [{
+                        label: 'Service Count Today',
+                        data: salonServices.map(service => service.count),
+                        backgroundColor: salonServices.map((service, index) => 
+                            index % 2 === 0 ? '#d32f2f' : '#4CAF50'
+                        ),
+                        borderWidth: 0,
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: { 
+                            beginAtZero: true,
+                            grid: {
+                                color: 'rgba(0,0,0,0.05)'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                color: 'rgba(0,0,0,0.05)'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateHomeChart() {
+            if (!homeChart) return;
+            
+            homeChart.data.datasets[0].data = salonServices.map(service => service.count);
+            homeChart.update();
+        }
+
+        // Check if there are changes today
+        function hasChangesToday() {
+            let hasChanges = false;
+            salonServices.forEach(service => {
+                if (service.count > 0) hasChanges = true;
+            });
+            return hasChanges || earningsData.today.customerLog.length > 0;
+        }
+
+        // Backup data
+        function backupToMultipleSources() {
+            const data = {
+                earningsData: earningsData,
+                salonServices: salonServices,
+                lastBackup: new Date().toISOString()
+            };
+            
+            localStorage.setItem('salonEarningsData', JSON.stringify(data.earningsData));
+            localStorage.setItem('lastBackup', new Date().toISOString());
+            
+            updateBackupStats();
+            showNotification('Data backed up successfully!');
+        }
+
+        // Save today's data
+        function saveTodayData() {
+            const today = new Date();
+            const todayStr = formatDateForStorage(today);
+            
+            earningsData.today.date = formatDate(today);
+            earningsData.today.dateStr = todayStr;
+            
+            const todayIndex = earningsData.history.findIndex(day => day.dateStr === todayStr);
+            
+            const todayData = {
+                dateStr: todayStr,
+                date: earningsData.today.date,
+                services: earningsData.today.services,
+                totalCustomers: earningsData.today.totalCustomers,
+                totalEarnings: earningsData.today.totalEarnings,
+                customerLog: earningsData.today.customerLog
+            };
+            
+            if (todayIndex !== -1) {
+                earningsData.history[todayIndex] = todayData;
+            } else {
+                earningsData.history.push(todayData);
+            }
+            
+            backupToMultipleSources();
+            updateEarningsChart();
+            updateHomeStats();
+            updateHistoryTable();
+            updateBackupStats();
+            
+            showNotification('Data saved successfully!');
+        }
+
+        // Reset today's counts
+        function resetTodayCounts() {
+            if (confirm('Reset today\'s counts? This will clear all customer entries.')) {
+                salonServices.forEach(service => {
+                    service.count = 0;
+                    service.dailyEarnings = 0;
+                });
+                
+                earningsData.today.customerLog = [];
+                
+                renderServices();
+                renderEarningsTable();
+                renderCustomerLog();
+                updateTodaySummary();
+                updateHomeStats();
+                updateServiceDistributionChart();
+                updateHomeChart();
+                
+                showNotification('Data reset successfully');
+            }
+        }
+
+        // Start a new day
+        function startNewDay() {
+            saveTodayData();
+            
+            salonServices.forEach(service => {
+                service.count = 0;
+                service.dailyEarnings = 0;
+            });
+            
+            earningsData.today.customerLog = [];
+            
+            const today = new Date();
+            const formattedDate = formatDate(today);
+            const todayStr = formatDateForStorage(today);
+            currentDate.textContent = formattedDate;
+            earningsData.today.date = formattedDate;
+            earningsData.today.dateStr = todayStr;
+            
+            historyDate.value = todayStr;
+            historyDate.max = todayStr;
+            
+            renderServices();
+            renderEarningsTable();
+            renderCustomerLog();
+            updateTodaySummary();
+            updateHomeStats();
+            updateServiceDistributionChart();
+            updateHomeChart();
+            updateHistoryTable();
+            updateBackupStats();
+            
+            showNotification('New day started!');
+        }
+
+        // Export data - FIXED VERSION
+        function exportData() {
+            try {
+                const data = {
+                    earningsData: earningsData,
+                    salonServices: salonServices,
+                    exportDate: new Date().toISOString(),
+                    appVersion: "3.0"
+                };
+                
+                const dataStr = JSON.stringify(data, null, 2);
+                
+                // Create blob
+                const blob = new Blob([dataStr], { type: 'application/json' });
+                
+                // Create object URL
+                const url = URL.createObjectURL(blob);
+                
+                // Create temporary link
+                const link = document.createElement('a');
+                link.href = url;
+                
+                // Create filename with current date
+                const today = new Date();
+                const dateStr = today.toISOString().split('T')[0];
+                link.download = `salonpro_backup_${dateStr}.json`;
+                
+                // Append to body, click and remove
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                
+                // Clean up
+                setTimeout(() => URL.revokeObjectURL(url), 100);
+                
+                showNotification('Data exported successfully! File downloading...');
+                
+            } catch (error) {
+                console.error('Export error:', error);
+                showNotification('Error exporting data: ' + error.message, 'error');
+            }
+        }
+
+        // Import data
+        function importData() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json';
+            input.style.display = 'none';
+            
+            input.onchange = function(event) {
+                const file = event.target.files[0];
+                if (!file) return;
+                
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    try {
+                        const importedData = JSON.parse(e.target.result);
+                        
+                        if (!importedData.earningsData || !importedData.salonServices) {
+                            throw new Error('Invalid backup file');
+                        }
+                        
+                        if (confirm('Import will replace all current data. Continue?')) {
+                            earningsData = importedData.earningsData;
+                            
+                            importedData.salonServices.forEach(importedService => {
+                                const currentService = salonServices.find(s => s.id === importedService.id);
+                                if (currentService) {
+                                    Object.assign(currentService, importedService);
+                                }
+                            });
+                            
+                            localStorage.setItem('salonEarningsData', JSON.stringify(earningsData));
+                            
+                            renderServices();
+                            renderEarningsTable();
+                            renderCustomerLog();
+                            updateTodaySummary();
+                            updateHomeStats();
+                            updateEarningsChart();
+                            updateServiceDistributionChart();
+                            updateHomeChart();
+                            updateHistoryTable();
+                            updateBackupStats();
+                            
+                            showNotification('Data imported successfully!');
+                        }
+                    } catch (error) {
+                        showNotification('Error importing data: ' + error.message, 'error');
+                    }
+                };
+                
+                reader.readAsText(file);
+            };
+            
+            document.body.appendChild(input);
+            input.click();
+            document.body.removeChild(input);
+        }
+
+        // Clear all data
+        function clearAllData() {
+            if (confirm('This will DELETE ALL data including history. Are you sure?')) {
+                localStorage.clear();
+                
+                earningsData = {
+                    today: {
+                        date: formatDate(new Date()),
+                        dateStr: formatDateForStorage(new Date()),
+                        services: [],
+                        totalCustomers: 0,
+                        totalEarnings: 0,
+                        customerLog: []
+                    },
+                    history: []
+                };
+                
+                salonServices.forEach(service => {
+                    service.count = 0;
+                    service.dailyEarnings = 0;
+                });
+                
+                renderServices();
+                renderEarningsTable();
+                renderCustomerLog();
+                updateTodaySummary();
+                updateHomeStats();
+                updateEarningsChart();
+                updateServiceDistributionChart();
+                updateHomeChart();
+                updateHistoryTable();
+                updateBackupStats();
+                
+                showNotification('All data cleared');
+            }
+        }
+
+        // Show notification
+        function showNotification(message, type = 'success') {
+            const existingNotification = document.querySelector('.notification');
+            if (existingNotification) {
+                existingNotification.remove();
+            }
+            
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.innerHTML = `<i class="fas fa-${type === 'error' ? 'exclamation-circle' : 'check-circle'}"></i> ${message}`;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.remove();
+                }
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
